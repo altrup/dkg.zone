@@ -149,7 +149,7 @@ canvas.addEventListener('click', function(event) {
         const distance = Math.sqrt((mouseX - linkX) ** 2 + (mouseY - linkY) ** 2);
         const clickableRadius = 250; // Radius of the clickable area
         if (distance <= clickableRadius) {
-            const linkUrl = ['http://dkg.zone/', 'url2', 'url3', 'url4', 'url5'][i]; // Example: replace with your actual URLs
+            const linkUrl = ['spencer', 'url2', 'url3', 'url4', 'url5'][i]; // Example: replace with your actual URLs
             window.open(linkUrl, '_blank'); // Open the link in a new tab
             break; // Exit the loop if a link is clicked
         }
@@ -191,6 +191,18 @@ animate();
 
     // Set the source of the circle image
     circleImg.src = 'images/Untitled.png'; // Provide the path to your texture image
+</script>
+
+<script>
+    // Function to check if the user is on a mobile device
+    function isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
+    // Redirect if the user is on a mobile device
+    if (isMobileDevice()) {
+        window.location.href = 'https://www.google.com'; // Redirect to Google
+    }
 </script>
 </body>
 </html>
