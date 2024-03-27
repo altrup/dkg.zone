@@ -15,6 +15,11 @@ app.get('/spencer', (req, res) => {
   res.sendFile(path.join(__dirname, "src/spencer.html"));
 });
 
+app.get('/mobile', (req, res) => {
+  res.sendFile(path.join(__dirname, "src/mobile.html"));
+});
+
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
