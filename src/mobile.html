@@ -3,28 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mobile Background Snap</title>
+<title>DKG</title>
 <style>
   body {
-    margin: 0;
+     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
     background: url('images/mobile.png') no-repeat center center fixed;
     background-size: cover;
     height: 100vh;
+    position: relative;
   }
 
   .content {
     text-align: center;
     padding: 20px;
     color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .clickable-area {
+    position: absolute;
+    top: 20%; /* adjust as needed */
+    left: 20%; /* adjust as needed */
+    width: 30%; /* adjust as needed */
+    height: 30%; /* adjust as needed */
+    background-color: rgba(0, 0, 255, 0.5); /* semi-transparent blue */
+    cursor: pointer;
   }
 </style>
 </head>
 <body>
+  <div class="clickable-area" onclick="alert('You clicked the area!')"></div>
+
   <div class="content">
-    <h1>Welcome to Our Mobile Website</h1>
-    <p>This is a simple mobile website with a background image that snaps to the resolution.</p>
+
   </div>
 </body>
 </html>
