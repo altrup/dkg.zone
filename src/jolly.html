@@ -3,30 +3,81 @@
 <head>
 <title>Jolly Egg</title>
 <style>
-.imagecontainer {
+.imagecontainer {	
 text-align: center;
-position: relative;
+     margin: 0;
+    padding: 0;
+    height: 100vh;
+    position: absolute;
 }
 
 .text {
-position: absolute;	
-top: 20%;
-left: 50%;
-transform: translate(-50%, -50%);
-color: black;
+    position: absolute;
+    top: calc(42% - 7.5vh); /* Adjusted top position */
+    left: calc(40% - 5vw); /* Adjusted left position */
+    width: 30vw; /* Adjusted width */
+    height: 80vh; /* Adjusted height */
+    cursor: pointer;
 }
 
+.text2 {
+    position: absolute;
+    top: calc(114% - 7.5vh); /* Adjusted top position */
+    left: calc(40% - 5vw); /* Adjusted left position */
+    width: 30vw; /* Adjusted width */
+    height: 80vh; /* Adjusted height */
+    cursor: pointer;
+}
+
+.vocab {
+    position: absolute;
+    top: calc(74% - 7.5vh); /* Adjusted top position */
+    left: calc(2.5% - 5vw); /* Adjusted left position */
+    width: 30vw; /* Adjusted width */
+    height: 80vh; /* Adjusted height */
+    cursor: pointer;
+}
+
+.rules {
+    position: absolute;
+    top: calc(74% - 7.5vh); /* Adjusted top position */
+    left: calc(78% - 5vw); /* Adjusted left position */
+    width: 30vw; /* Adjusted width */
+    height: 80vh; /* Adjusted height */
+    cursor: pointer;
+}
+
+  .footer {
+    position: fixed; /* Fixed position at the bottom */
+    left: 0;
+    bottom: 0;
+    width: 100%; /* Full width */
+    background-color: #FE6965; /* Background color of the footer */
+    color: black; /* Text color of the footer */
+    text-align: center; /* Center align the text */
+    padding: 2px 0; /* Add some padding for better visibility */
+  }
+
+  .footer a {
+    color: black; /* Text color of the link */
+    text-decoration: underline; /* Add underline to the link */
+  }
+
+  .stretched-text {
+    display: inline-block;
+    transform: scaleX(2); /* Adjust the scale factor as needed */
+  }
 </style>
 </head>
 <body>
 <div class="imagecontainer">
-<img src="egg.png">
-<div class="text"> Jolly Egg is a sport that's best described as "Basketball mixed with football, with a scoring rate similar to Lacrosse."
- All you need to play is an even amount of people larger than or equal to 4, a lacross net (original) or tree (adapted), and of course, an authentic
+<img src="images/egg.png">
+
+
 </div>
-<div class="text"> Jolly Egg is a sport that's best described as "Basketball mixed with football, with a scoring rate similar to hockey."
- All you need to play is an even amount of people larger than or equal to 4, a lacross net (original) or tree (adapted), and of course, an authentic
-</div>
+
+<div class="footer">
+  <p><a href="https://www.google.com/search?sca_esv=070a86fdf7893579&sxsrf=ACQVn08a7DB2nYNcDM_WA6CmItyEjjmVWg:1711744454134&q=jolly+egg&tbm=shop&source=lnms&prmd=isvnmbtz&ved=1t:200715&ictx=111&biw=1396&bih=705&dpr=1.38" target="_blank"><span class="stretched-text">Click here to get your own Jolly Egg</span></a></p>
 </div>
 </body>
 </html>
