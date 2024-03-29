@@ -11,7 +11,7 @@
         overflow: hidden;
         background-image: url('images/background.jpg'); /* Replace 'your-background-image.jpg' with the path to your background image */
         background-size: 100% 50%;
-        background-repeat: no-repeat;
+   
     }
 
 
@@ -90,7 +90,7 @@
         houseImages[1] = new Image();
         houseImages[1].src = 'images/brady.png'; // Provide the path to the second house image
         houseImages[2] = new Image();
-        houseImages[2].src = 'images/spencer.png'; // Provide the path to the third house image
+        houseImages[2].src = 'images/james.png'; // Provide the path to the third house image
         houseImages[3] = new Image();
         houseImages[3].src = 'images/spencer.png'; // Provide the path to the fourth house image
         houseImages[4] = new Image();
@@ -149,7 +149,7 @@ canvas.addEventListener('click', function(event) {
         const distance = Math.sqrt((mouseX - linkX) ** 2 + (mouseY - linkY) ** 2);
         const clickableRadius = 250; // Radius of the clickable area
         if (distance <= clickableRadius) {
-            const linkUrl = ['spencer', 'url2', 'url3', 'url4', 'url5'][i]; // Example: replace with your actual URLs
+            const linkUrl = ['spencer', 'brady', 'james', 'url4', 'url5'][i]; // Example: replace with your actual URLs
             window.open(linkUrl, '_blank'); // Open the link in a new tab
             break; // Exit the loop if a link is clicked
         }
