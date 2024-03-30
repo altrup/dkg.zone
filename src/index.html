@@ -166,10 +166,10 @@ window.addEventListener('keyup', function(e) {
 });
 function handleKeys() {
     if (keyState['ArrowLeft'] || keyState['a']) {
-        circleAngle -= Math.PI / 180; // Rotate left
+        circleAngle -= Math.PI / 115; // Rotate left
     }
     if (keyState['ArrowRight'] || keyState['d']) {
-        circleAngle += Math.PI / 180; // Rotate right
+        circleAngle += Math.PI / 90; // Rotate right
     }
 }
 
@@ -204,5 +204,7 @@ animate();
         window.location.href = 'mobile'; // Redirect to Google
     }
 </script>
+
+<script defer src="https://cdn.commented.io/latest.js"></script>
 </body>
 </html>
