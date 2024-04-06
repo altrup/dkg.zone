@@ -9,10 +9,24 @@
         margin: 0;
         padding: 0;
         overflow: hidden;
-        background-image: url('images/background.jpg'); /* Replace 'your-background-image.jpg' with the path to your background image */
-        background-size: 100% 50%;
    
     }
+
+.imageback {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 110%;
+  z-index: -1; /* Ensure the background image stays behind other elements */
+}
+
+.imageback img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures the image covers the entire container */
+} 
+
 
 
     #imageContainer {
@@ -41,11 +55,14 @@
 </head>
 <body>
 
+
+
 <div id="imageContainer">
     <img id="scaledImage" src="images/helpful.png" alt="Your Image">
 </div>
 
 <canvas id="myCanvas"></canvas>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -92,7 +109,7 @@
         houseImages[2] = new Image();
         houseImages[2].src = 'images/james.png'; // Provide the path to the third house image
         houseImages[3] = new Image();
-        houseImages[3].src = 'images/spencer.png'; // Provide the path to the fourth house image
+        houseImages[3].src = 'images/eric.png'; // Provide the path to the fourth house image
         houseImages[4] = new Image();
         houseImages[4].src = 'images/spencer.png'; // Provide the path to the fifth house image
 
@@ -149,7 +166,7 @@ canvas.addEventListener('click', function(event) {
         const distance = Math.sqrt((mouseX - linkX) ** 2 + (mouseY - linkY) ** 2);
         const clickableRadius = 250; // Radius of the clickable area
         if (distance <= clickableRadius) {
-            const linkUrl = ['spencer', 'brady', 'james', 'url4', 'url5'][i]; // Example: replace with your actual URLs
+            const linkUrl = ['spencer', 'brady', 'james', 'eric', 'url5'][i]; // Example: replace with your actual URLs
             window.open(linkUrl, '_blank'); // Open the link in a new tab
             break; // Exit the loop if a link is clicked
         }
@@ -205,6 +222,12 @@ animate();
     }
 </script>
 
-<script defer src="https://cdn.commented.io/latest.js"></script>
+
+
+<div class="imageback">
+  <img src="images/background.jpg">
+</div>
+
+
 </body>
 </html>
