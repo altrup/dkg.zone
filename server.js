@@ -47,6 +47,10 @@ app.get('/alex', (req, res) => {
   res.sendFile(path.join(__dirname, "src/alex.html"));
 });
 
+app.get('/october', (req, res) => {
+    res.sendFile(path.join(__dirname, "src/october.html"));
+});
+
 
 app.listen(port, () => {
   console.log(`I cannot tell a lie, Example app listening on port ${port}`);

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halloween Decoration Services</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+        }
+
+        nav {
+            background-color: #000000;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+            nav a {
+                color: #fff;
+                text-decoration: none;
+                padding: 10px;
+                font-size: 2em;
+            }
+
+                nav a:hover {
+                    background-color: #575757;
+                    border-radius: 5px;
+                    font-size: 2.1em;
+                }
+
+        .container {
+            padding: 40px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+            .tab-content.active {
+                display: block;
+            }
+
+        h1 {
+            color: #000000;
+        }
+
+        footer {
+            background-color: #000000;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .top-right-image {
+            position: absolute;
+            top: 60px; 
+            right: 50px; 
+            width: 300px; 
+            height: auto;
+        }
+
+        .gallery {
+            width: 400px;
+            height: auto;
+        }
+
+        .service {
+            width: 900px; 
+            height: auto;
+        }
+
+        .service2 {
+            width: 1400px; 
+            height: auto;
+        }
+    </style>
+    <script>
+        function showTab(tabId) {
+            var tabs = document.getElementsByClassName('tab-content');
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            document.getElementById(tabId).classList.add('active');
+        }
+        document.addEventListener("DOMContentLoaded", function() {
+            showTab('home');
+        });
+    </script>
+</head>
+<body>
+    <nav>
+        <a href="#" onclick="showTab('home')">Home</a>
+        <a href="#" onclick="showTab('services')">Services</a>
+        <a href="#" onclick="showTab('contact')">Contact</a>
+        <a href="#" onclick="showTab('gallery')">Gallery</a>
+    </nav>
+
+
+    <div class="container">
+        <div id="home" class="tab-content">
+
+            <img src="images/rod.png" alt="Halloween Decoration Services" style="width:100%; max-width:600px; height:auto;">
+
+            <p style="font-size: 2em;">
+                Whether you just want a scarecrow next to a bush, or want your yard covered in decorations, we'll do all the work for you!
+            </p>
+
+            <p style="font-size: 2.4em;">
+                <a href="#" onclick="showTab('services')">Click here to learn about the process/see pricing</a> and
+                <a href="#" onclick="showTab('contact')">Click here for our contact info</a>.
+            </p>
+
+            <h1>About October Optics</h1>
+            <p style="font-size: 1.5em;">
+                I (Spencer, creator of October Optics) have been obsessed with Halloween and the lights that come with it for most of my life. When I was around 5 years old, I started helping my mom with decorating the house each year. When I would go to my grandparents’ house, we would always go on walks to see who had the best decorations. As time would go on, my love for Halloween would grow. This brings us to 2020, the year of "containment", which led to a lot of reminiscing and idea forming, especially for me. I became very interested in nostalgia, which would mix with my love for Halloween. As a result of this, I began collecting decorations, which would branch into even more Halloweeny Hobbies. Looking for old Halloween related media online, learning about the different types of decorations, when they came and gone, keeping in touch with my own memories of past Halloweens, and much more.
+            </p>
+            <p style="font-size: 1.5em;">
+                But along with reminiscing comes the realization of change. In this case, I began to notice that Halloween has seemed to be passing its golden years. Hence, October Optics. This is my effort to boost the culture of Halloween and everything related to it. So, no matter the size of the job, or reason you need us, we’d love to help. Seeing each and every house on a street decorated would be a dream come true.
+            </p>
+        </div>
+
+        <div id="about" class="tab-content">
+            <h1>About Us</h1>
+            <p>We are a dedicated team of Halloween enthusiasts who love to decorate homes and create spooky atmospheres. Our goal is to make your Halloween memorable and hassle-free.</p>
+        </div>
+
+        <div id="services" class="tab-content">
+            <h2>Our Service Process</h2>
+
+            <h3>Step 1: Contact Us</h3>
+            <p>Reach out to us and let us know what you need done, no matter if the workload is big, small, more fall related, more Halloween related, or anything in between. If you're unsure about the details, don’t worry! Contact us anyway, and we’ll help you figure it out.</p>
+
+            <h3>Step 2: Decoration Acquisition !OPTIONAL!</h3>
+            <p>This step may not apply to you, but if you don’t have decorations or need additional ones, we’ll find the best deals online and in-store for the types of decorations you want. Here’s how it works:</p>
+            <ul>
+                <li>You tell us what kind of decorations you need</li>
+                <li>We suggest options and find the best deals</li>
+                <li>You make an upfront payment</li>
+                <li>We purchase the decorations and deliver them to your house</li>
+            </ul>
+            <p><a href="#decoration-types">Click here to view the different types of decorations we buy.</a></p>
+
+            <h3> I encourage working with us to buy extra decorations! We have multiple years of experience in finding the best deals, and the more the merrier! </h3>
+
+            <h3>Step 3: Preparation</h3>
+            <p>After obtaining any additional decorations if needed, we’ll come to your home and take out any decorations you need from storage.</p>
+
+            <h3>Step 4: Decoration Setup</h3>
+            <p>After you show us/tell us where all of your electrical outlets are + anything else you want us to know, we’ll set up your Halloween decorations.</p>
+            <h4>NOTE: We don’t go on roofs, and other than hanging stuff on your windows/putting stuff near your windows we don’t decorate interiors.</h4>
+
+            <h3>Step 5: Ongoing Support</h3>
+            <p>Throughout the season, feel free to contact us for any necessary maintenance, questions, or additional requests. MORE BELOW \/ \/</p>
+
+            <h3>Step 6: Post-Season Takedown + Pricing</h3>
+            <p>After October has ended, we’ll return to take down the decorations and store them wherever you’d like. Then, you pay us.	</p>
+            <h3>$10 per hour, plus a $5 travel fee if you live a certain distance away from us (we'll tell you if this applies upon contact) </h3>
+            <h3> though, note that pricing isn't strict at all, as some jobs may not even take multiple hours. We'll communicate it with you throughout the process.  </h3>
+
+            <h1 id="decoration-types">Here is a “catalog” of items, to give you an idea of the types of decorations that are out there. The selections aren’t limited to the 4 images shown for each type, those are just examples.</h1>
+            <img src="images/basicdec.png" alt="yeah" class="service">
+            <img src="images/otherdec.png" alt="yeah" class="service2">
+        </div>
+
+        <div id="gallery" class="tab-content">
+            <h1>Our Gallery</h1>
+            <p>As you can tell it's a little small right now, as in just my house, but it's something. It will be bigger by the end of the season!</p>
+            <img src="images/house5.png" alt="yeah" class="gallery">
+            <img src="images/house2.png" alt="yeah" class="gallery">
+            <img src="images/house3.png" alt="yeah" class="gallery">
+            <img src="images/house4.png" alt="yeah" class="gallery">
+            <img src="images/house1.png" alt="yeah" class="gallery">
+        </div>
+
+        <div id="contact" class="tab-content">
+            <h1>Contact Us</h1>
+            <p style="font-size: 5em;">
+                Email: sbcodd@gmail.com
+            </p>
+            <p style="font-size: 8em;">
+                Phone: 716-345-0353
+            </p>
+        </div>
+    </div>
+
+
+</body>
+</html>
