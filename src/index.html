@@ -166,7 +166,7 @@ canvas.addEventListener('click', function(event) {
         const distance = Math.sqrt((mouseX - linkX) ** 2 + (mouseY - linkY) ** 2);
         const clickableRadius = 250; // Radius of the clickable area
         if (distance <= clickableRadius) {
-            const linkUrl = ['spencer', 'brady', 'james', 'eric', 'url5'][i]; // Example: replace with your actual URLs
+            const linkUrl = ['spencer', 'brady', 'james', 'https://altrup.dkg.zone', 'url5'][i]; // Example: replace with your actual URLs
             window.open(linkUrl, '_blank'); // Open the link in a new tab
             break; // Exit the loop if a link is clicked
         }
