@@ -1,3 +1,70 @@
-h1 {
-    font-size: 100px;
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+
+}
+
+.imageback {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 110%;
+    z-index: -1;
+    /* Ensure the background image stays behind other elements */
+}
+
+.imageback img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Ensures the image covers the entire container */
+}
+
+
+
+#imageContainer {
+    position: absolute;
+    top: 130px;
+    /* Adjust the top coordinate as needed */
+    left: 500px;
+    /* Adjust the left coordinate as needed */
+    animation: fadeEffect 3s infinite;
+    /* Apply the fade effect animation */
+}
+
+@keyframes fadeEffect {
+    0% {
+        opacity: 0;
+    }
+
+    /* Start with full transparency */
+    30% {
+        opacity: 1;
+    }
+
+    /* Fade in over the first 10% of the animation */
+    70% {
+        opacity: 1;
+    }
+
+    /* Keep the image visible for the majority of the animation */
+    100% {
+        opacity: 0;
+    }
+
+    /* Fade out at the end of the animation */
+}
+
+#scaledImage {
+    width: 400px;
+    /* Adjust the width as needed */
+    height: auto;
+    /* Maintain the aspect ratio */
+}
+
+canvas {
+    display: block;
 }
