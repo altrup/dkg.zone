@@ -90,8 +90,6 @@
       transform: translate(-50%, -50%); /* center the circle at arm tip */
       box-shadow: 0 6px 18px rgba(0,0,0,0.35), 0 0 10px rgba(255,255,255,0.06) inset;
       outline: 2px solid rgba(255,255,255,0.15);
-      backdrop-filter: saturate(1.1);
-      will-change: transform;
       /* keep the image upright by counter-spinning at the same rate */
       animation: counter var(--spd, var(--speed)) linear infinite;
       animation-direction: reverse;
@@ -208,8 +206,8 @@ body.preload .stage{
         <div class="orbit" style="--spd: 28s; animation-delay: -16s; --rad: var(--radius);">
           <div class="arm">
             <div class="planet">
-              <a class="planet-link" href="https://dkg.zone/brady" target="_blank" rel="noopener" title="Open link 5">
-                <img src="images/BR.png"/>
+              <a class="planet-link" href="https://dkg.zone/brady" target="_blank" rel="noopener" title="Brady">
+                <img src="images/BR.png" alt="Orbit image 5"/>
               </a>
             </div>
           </div>
@@ -297,7 +295,7 @@ body.preload .stage{
     el.addEventListener('blur', stop);
     el.addEventListener('pointercancel', stop);
   });
-})();
+});
 
 window.addEventListener('load', () => {
   requestAnimationFrame(() => document.body.classList.remove('preload'));
