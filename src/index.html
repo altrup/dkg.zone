@@ -1,36 +1,307 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Rotating Circle with Houses</title>
-        <link rel="stylesheet" href="/styles.css">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orbiting Image Circles</title>
+  <style>
+    :root {
+      /* Tweak these for size & speed */
+      --size: min(70vmin, 560px);        /* diameter of the big circle */
+      --planet: calc(var(--size) * 0.24);/* slightly bigger small circles *//* bigger small circles *//* diameter of small circles */
+      --radius: calc( (var(--size) * 0.5 * 0.95) + var(--edgeOffset, 0px) );/* orbit radius from the center */
+      --stroke: 3px;                     /* outline thickness of big circle */
+      --speed: 20s;                      /* base orbit period */
+      --bg1: #000000;                    /* background gradient */
+      --bg2: #000000;
+      --ring: rgba(255,255,255,0.75);    /* big circle color */
+      --glow: 0 0 24px rgba(255,255,255,0.2);
+    }
 
-        <script>
-            // Function to check if the user is on a mobile device
-            function isMobileDevice() {
-                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            }
+    * { box-sizing: border-box; }	
 
-            // Redirect if the user is on a mobile device
-            if (isMobileDevice()) {
-                window.location.href = 'mobile'; // Redirect to Google
-            }
-        </script>
-    </head>
+    body {
+      margin: 0;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(100% 100% at 50% 50%, var(--bg2), var(--bg1));
+      color: #e8ecf4;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    }
 
-    <body>
-        <div id="imageContainer">
-            <img id="scaledImage" src="images/helpful.png" alt="Your Image">
+    .stage {
+      position: relative;
+      width: var(--size);
+      height: var(--size);
+      filter: drop-shadow(var(--glow));
+    }
+
+    /* Centered SVG big circle with a draw animation */
+    .big-circle {
+      position: absolute;
+      inset: 0;
+    }
+    .big-circle svg { width: 100%; height: 100%; display: block; overflow: visible; }
+    .big-circle .ring {
+      fill: none;
+      stroke: var(--ring);
+      stroke-width: var(--stroke);
+      stroke-linecap: round;
+      /* Circle draw animation */
+      stroke-dasharray: 596.9; /* ~ circumference of r=95 (in SVG viewBox units) */
+      stroke-dashoffset: 596.9;
+      animation: draw 1.8s ease-out forwards;
+      filter: drop-shadow(0 0 6px rgba(255,255,255,0.35));
+    }
+
+    @keyframes draw {
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* Orbit system: origin pinned to center of stage */
+    .orbits {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0; height: 0; /* we only need a transform origin point at center */
+    }
+
+    .orbit {
+      position: absolute;
+      top: 0; left: 0;
+      transform-origin: 0 0; /* rotate around the center point */
+      animation: spin var(--spd, var(--speed)) linear infinite;
+    }
+
+    /* Position the planet at the end of an invisible arm */
+    .arm {
+      position: absolute;
+      inset: 0;
+      transform: translateX(var(--rad, var(--radius)));
+    }
+
+    .planet {
+      width: var(--pln, var(--planet));
+      height: var(--pln, var(--planet));
+      border-radius: 50%;
+      overflow: hidden;
+      position: absolute;
+      transform: translate(-50%, -50%); /* center the circle at arm tip */
+      box-shadow: 0 6px 18px rgba(0,0,0,0.35), 0 0 10px rgba(255,255,255,0.06) inset;
+      outline: 2px solid rgba(255,255,255,0.15);
+      backdrop-filter: saturate(1.1);
+      will-change: transform;
+      /* keep the image upright by counter-spinning at the same rate */
+      animation: counter var(--spd, var(--speed)) linear infinite;
+      animation-direction: reverse;
+    }
+
+    .planet img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .planet-link { display: block; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; cursor: pointer; text-decoration: none; }
+    .planet-link:focus-visible { outline: 3px solid rgba(255,255,255,0.7); outline-offset: 3px; border-radius: 50%; }
+
+    @keyframes spin { to { transform: rotate(1turn); } }
+    @keyframes counter { to { transform: translate(-50%, -50%) rotate(1turn); } }
+
+    /* Respect prefers-reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      .orbit, .planet { animation: none; }
+      .big-circle .ring { animation: none; stroke-dashoffset: 0; }
+    }
+
+    /* Minimal caption for quick instructions */
+    .caption { position: fixed; left: 50%; bottom: 1rem; transform: translateX(-50%); font-size: 0.9rem; opacity: 0.85; text-align: center; margin: 0; }
+    .caption code { background: rgba(255,255,255,0.08); padding: 0.15rem 0.35rem; border-radius: 0.4rem; }
+    /* Equal speed + evenly spaced orbits (72° apart) */
+    .orbits .orbit { animation: spin var(--speed) linear infinite !important; }
+    .orbits .orbit:nth-child(1) { animation-delay: calc(-1 * var(--speed) * 0) !important; }
+    .orbits .orbit:nth-child(2) { animation-delay: calc(-1 * var(--speed) * 0.2) !important; }
+    .orbits .orbit:nth-child(3) { animation-delay: calc(-1 * var(--speed) * 0.4) !important; }
+    .orbits .orbit:nth-child(4) { animation-delay: calc(-1 * var(--speed) * 0.6) !important; }
+    .orbits .orbit:nth-child(5) { animation-delay: calc(-1 * var(--speed) * 0.8) !important; }
+    .orbits .orbit .planet { animation: counter var(--speed) linear infinite reverse !important; }
+    /* Keep images upright: move counter-rotation to the inner link */
+    .planet { animation: none !important; }
+    .planet-link { animation: upright var(--speed) linear infinite reverse !important; transform: rotate(0deg); }
+    @keyframes upright { to { transform: rotate(1turn); } }
+	
+:root { --reveal-dur: 3.3s; } /* adjust duration here */
+
+.stage{
+  /* keep the same filter functions in both states */
+  --blur: 0px;
+  --bright: 1;
+  --sat: 1;
+  filter: blur(var(--blur)) brightness(var(--bright)) saturate(var(--sat)) drop-shadow(var(--glow));
+  opacity: 1;
+  transition: filter var(--reveal-dur) ease, opacity var(--reveal-dur) ease;
+}
+
+/* initial blurred state */
+body.preload .stage{
+  --blur: 6px;      /* amount of blur at start */
+  --bright: .1;      /* optional dim */
+  --sat: .1;        /* optional desat */
+  opacity: .5;
+}
+  </style>
+</head>
+<body class="preload">
+  <main>
+  
+  
+    <div class="stage" aria-label="Orbiting image circles demo">
+	<img src="images/log.png" alt="Center" style="position:absolute;inset:0;margin:auto;max-width:calc(var(--size)*0.5);max-height:calc(var(--size)*0.5);object-fit:contain;z-index:-1;pointer-events:none;">
+
+
+      <!-- Big center circle drawn via animated SVG stroke -->
+      <div class="big-circle" role="img" aria-label="Center circle">
+        <svg viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+          <circle class="ring" cx="100" cy="100" r="95" />
+        </svg>
+      </div>
+
+      <!-- Orbit container (origin at exact center) -->
+      <div class="orbits">
+        <!-- Each .orbit spins around the center. Use animation-delay to evenly space them -->
+        <div class="orbit" style="--spd: 20s; animation-delay: 0s; --rad: var(--radius);">
+          <div class="arm">
+            <div class="planet">
+              <a class="planet-link" href="https://altrup.dkg.zone/" target="_blank" rel="noopener" title="Altrup">
+                <img src="images/gc.png" alt="Orbit image 1"/>
+              </a>
+            </div>
+          </div>	
         </div>
 
-        <canvas id="myCanvas"></canvas>
-
-        <div class="imageback">
-            <img src="images/background.jpg">
+        <div class="orbit" style="--spd: 22s; animation-delay: -4s; --rad: var(--radius);">
+          <div class="arm">
+            <div class="planet">
+              <a class="planet-link" href="https://dkg.zone/spencer" target="_blank" rel="noopener" title="Spencer">
+                <img src="images/sc.png" alt="Orbit image 2"/>
+              </a>
+            </div>
+          </div>
         </div>
 
-        <script src="/key-listeners.js"></script>
-        <script src="/index.js"></script>
-    </body>
+        <div class="orbit" style="--spd: 24s; animation-delay: -8s; --rad: var(--radius);">
+          <div class="arm">
+            <div class="planet">
+              <a class="planet-link" href="https://dkg.zone/james" target="_blank" rel="noopener" title="James">
+                <img src="images/so.png" alt="Orbit image 3"/>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="orbit" style="--spd: 26s; animation-delay: -12s; --rad: var(--radius);">
+          <div class="arm">
+            <div class="planet">
+              <a class="planet-link" href="http://cerisedkg.us/" target="_blank" rel="noopener" title="Alex">
+                <img src="images/al.png" alt="Orbit image 4"/>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="orbit" style="--spd: 28s; animation-delay: -16s; --rad: var(--radius);">
+          <div class="arm">
+            <div class="planet">
+              <a class="planet-link" href="https://dkg.zone/brady" target="_blank" rel="noopener" title="Open link 5">
+                <img src="images/br.png"/>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="caption">
+
+    </p>
+  </main>
+ <script>
+(() => {
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const stage = document.querySelector('.stage');
+  if (!stage || prefersReduced) return;
+
+  // ---- Speed control (your original) ----
+  const targets = Array.from(stage.querySelectorAll('.orbits .orbit, .orbits .planet, .orbits .planet-link'));
+  const FAST = 10.2;   // faster when NOT hovering
+  const SLOW = 2.0;  // slower while hovering
+  let current = FAST;
+
+  function setRate(rate) {
+    current = rate;
+    targets.forEach(el => {
+      el.getAnimations().forEach(anim => {
+        try { anim.playbackRate = rate; } catch(e) {}
+      });
+    });
+  }
+  setRate(FAST);
+
+  function ramp(to, ms = 500) {
+    const start = performance.now();
+    const from = current;
+    function step(now) {
+      const t = Math.min(1, (now - start) / ms);
+      const eased = t * t * (3 - 2 * t); // smoothstep
+      setRate(from + (to - from) * eased);
+      if (t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  stage.addEventListener('mouseenter', () => ramp(SLOW, 500), { passive: true });
+  stage.addEventListener('mouseleave', () => ramp(FAST, 500), { passive: true });
+
+  // ---- Hover sounds for heads (scoped to this IIFE) ----
+  const heads = stage.querySelectorAll('.planet-link[data-sound]');
+  if (!heads.length) return;
+
+  const hoverAudio = new Audio();
+  hoverAudio.preload = 'auto';
+  hoverAudio.volume = 1;
+
+  // Unlock audio once (autoplay policy)
+  function unlockAudioOnce() {
+    hoverAudio.muted = true;
+    hoverAudio.play().then(() => {
+      hoverAudio.pause();
+      hoverAudio.currentTime = 0;
+      hoverAudio.muted = false;
+    }).catch(() => {});
+  }
+  stage.addEventListener('pointerdown', unlockAudioOnce, { once: true });
+
+  function playFor(el) {
+    const src = el.getAttribute('data-sound');
+    if (!src) return;
+    const abs = new URL(src, location.href).href;
+    if (hoverAudio.src !== abs) hoverAudio.src = abs;
+    hoverAudio.currentTime = 0;
+    hoverAudio.play().catch(() => {});
+  }
+  function stop() {
+    hoverAudio.pause();
+    hoverAudio.currentTime = 0;
+  }
+
+  heads.forEach(el => {
+    el.addEventListener('mouseenter', () => playFor(el), { passive: true });
+    el.addEventListener('focus', () => playFor(el));     // keyboard users
+    el.addEventListener('mouseleave', stop, { passive: true });
+    el.addEventListener('blur', stop);
+    el.addEventListener('pointercancel', stop);
+  });
+})();
+
+window.addEventListener('load', () => {
+  requestAnimationFrame(() => document.body.classList.remove('preload'));
+});
+</script>
+</body>
 </html>
