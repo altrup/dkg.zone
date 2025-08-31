@@ -295,7 +295,7 @@ body.preload .stage{
     el.addEventListener('blur', stop);
     el.addEventListener('pointercancel', stop);
   });
-});
+})();
 
 window.addEventListener('load', () => {
   requestAnimationFrame(() => document.body.classList.remove('preload'));
