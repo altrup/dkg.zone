@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Layered Animation Site (Fade From Black)</title>
+<style>
+  :root {
+    --base-w: 1920;
+    --base-h: 1080;
+    --scale: 1;
+
+    /* Arrow jiggle variables */
+    --jiggle-x: 4px;
+    --jiggle-y: 6px;
+    --jiggle-rot: 2deg;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background: #000; /* stays black under everything */
+  }
+
+  /* Full-screen fade overlay */
+  #blackFade {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    opacity: 1;
+    z-index: 9999;
+    pointer-events: none;
+    transition: opacity 500ms ease;
+  }
+  #blackFade.hide { opacity: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    #blackFade { transition: none; }
+  }
+
+  /* Fixed-resolution stage */
+  #stage {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    width: calc(var(--base-w) * 1px);
+    height: calc(var(--base-h) * 1px);
+    transform: translate(-50%, -50%) scale(var(--scale));
+    transform-origin: center center;
+    backface-visibility: hidden;
+    will-change: transform;
+  }
+
+  .layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(var(--base-w) * 1px);
+    height: calc(var(--base-h) * 1px);
+    overflow: hidden;
+  }
+
+  /* Trees & misc imgs keep transitions */
+  #layer1 img,
+  #layer2 img,
+  #layer3 img {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 1s ease-in-out, left 1s ease-in-out;
+  }
+
+  #layer1 { z-index: 1; }
+  #layer2 { z-index: 2; }
+  #layer3 { z-index: 3; }
+
+  /* House wrapper slides; image wiggles */
+  .houseWrap {
+    position: absolute;
+    top: 50%;
+    left: 50%; /* JS: 175% -> 50% */
+    transform: translate(-50%, -50%);
+    transition: left 1s ease-in-out;
+    cursor: pointer;
+  }
+  #layer3 .houseImg {
+    position: static;
+    transform: none;
+    transition: none;
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+    height: var(--house-h, 1120px);
+    width: auto;
+  }
+
+  /* Right-side arrow (above label) */
+  #navArrowWrap {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 4; /* stays above label */
+    width: 200px;
+    height: 200px;
+    pointer-events: auto;
+    cursor: pointer;
+    padding: 8px;
+    box-sizing: content-box;
+  }
+  #navArrowImg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+    animation: arrowJiggle 2200ms ease-in-out infinite,
+               hueCycle 1s linear infinite;
+    will-change: transform, filter;
+  }
+  #navArrowWrap:active { transform: translateY(-50%) scale(0.96); }
+  #navArrowWrap:active #navArrowImg { animation-play-state: paused; }
+
+  @keyframes arrowJiggle {
+    0%   { transform: translate(0, 0) rotate(0); }
+    20%  { transform: translate(calc(var(--jiggle-x) *  4.7), calc(var(--jiggle-y) * -4.4)) rotate(calc(var(--jiggle-rot) *  0.6)); }
+    40%  { transform: translate(calc(var(--jiggle-x) * -2.5), calc(var(--jiggle-y) *  2.8)) rotate(calc(var(--jiggle-rot) * -0.7)); }
+    60%  { transform: translate(calc(var(--jiggle-x) *  2.8), calc(var(--jiggle-y) *  3.6)) rotate(calc(var(--jiggle-rot) *  0.8)); }
+    80%  { transform: translate(calc(var(--jiggle-x) * -3.6), calc(var(--jiggle-y) * -5.5)) rotate(calc(var(--jiggle-rot) * -0.6)); }
+    100% { transform: translate(0, 0) rotate(0); }
+  }
+  @keyframes hueCycle {
+    from { filter: hue-rotate(0deg)   saturate(140%) brightness(105%); }
+    to   { filter: hue-rotate(360deg) saturate(140%) brightness(105%); }
+  }
+
+  /* --------- PAGE LABEL --------- */
+  #pageLabel {
+    position: absolute;
+    z-index: 3; /* above layers, below arrow */
+    left: 50%;
+    top: 12%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    color: #fff;
+    font: 700 60px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    padding: 6px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+    text-shadow:
+      -5px -5px 0 #000,
+       0   -5px 0 #000,
+       5px -5px 0 #000,
+      -5px  0   0 #000,
+       5px  0   0 #000,
+      -5px  5px 0 #000,
+       0    5px 0 #000,
+       5px  5px 0 #000;
+  }
+  .spawn {
+    animation: labelPop 160ms ease-out both;
+  }
+  @keyframes labelPop {
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Fade overlay -->
+<div id="blackFade"></div>
+
+<div id="stage" aria-label="Scaled Stage">
+  <div id="layer1" class="layer"></div>
+  <div id="layer2" class="layer"></div>
+  <div id="layer3" class="layer"></div>
+
+  <!-- Page label (above layers, below arrow) -->
+  <div id="pageLabel" aria-live="polite"></div>
+
+  <!-- Right-side nav arrow -->
+  <div id="navArrowWrap" role="button" aria-label="Next">
+    <img id="navArrowImg" alt="Next" />
+  </div>
+</div>
+
+<script>
+/* ======= CONFIG ======= */
+const ARROW_SRC = 'images/arrow.png'; // change if needed
+const PAGE_TEXT = {
+  1: 'My Halloween Things',
+  2: 'My Creations',
+  3: 'My Thoughts',
+  4: 'My Plans',
+};
+
+/* EDIT THESE: destination links for each house/page */
+const LINKS = {
+  1: 'halloween',
+  2: 'sworks',
+  3: 'sthoughts',
+  4: 'splans',
+};
+
+/* ======= SCALE THE STAGE ======= */
+(function fitStage() {
+  const BASE_W = 1920, BASE_H = 1080;
+  function updateScale() {
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const scale = Math.min(vw / BASE_W, vh / BASE_H);
+    document.documentElement.style.setProperty('--scale', scale);
+  }
+  window.addEventListener('resize', updateScale);
+  updateScale();
+})();
+
+/* ======= DATA ======= */
+const IMAGES = {
+  backgrounds: ['images/bg1.png', 'images/bg2.png', 'images/bg3.png', 'images/bg4.png'],
+  trees: ['images/treesone.png', 'images/treestwo.png', 'images/treesthree.png', 'images/treesfour.png'],
+  houses: ['images/houseone.png', 'images/housetwo.png', 'images/housethree.png', 'images/housefour.png']
+};
+
+/* ======= PRELOAD (and natural sizes for BG) ======= */
+const BG_META = {};
+function preloadImages() {
+  const urls = [...IMAGES.backgrounds, ...IMAGES.trees, ...IMAGES.houses, ARROW_SRC];
+  return Promise.all(urls.map(src => new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      if (IMAGES.backgrounds.includes(src)) {
+        BG_META[src] = { w: img.naturalWidth, h: img.naturalHeight };
+      }
+      resolve();
+    };
+    img.onerror = reject;
+    img.src = src;
+  })));
+}
+
+/* ======= ELEMENTS ======= */
+let currentAnimation; // set at boot
+const totalAnimations = IMAGES.backgrounds.length;
+const layer1 = document.getElementById('layer1');
+const layer2 = document.getElementById('layer2');
+const layer3 = document.getElementById('layer3');
+const navArrowImg = document.getElementById('navArrowImg');
+navArrowImg.src = ARROW_SRC;
+const blackFade = document.getElementById('blackFade');
+const pageLabel = document.getElementById('pageLabel');
+
+let currentHouseWrap = null;
+
+/* ======= SEAMLESS BG SCROLLER ======= */
+const BASE_H = 1080;
+let bgOffsetX = 0;
+let bgTileW = 2048;
+let lastTs = 0;
+let bgSpeed = 1040; // px/sec left
+let currentBgSrc = null;
+
+function computeTileWidthFor(src) {
+  const meta = BG_META[src];
+  if (!meta || meta.h === 0) return 2048;
+  const scale = BASE_H / meta.h;
+  return meta.w * scale;
+}
+
+function setBackgroundSeamless(layer, src) {
+  const oldW = bgTileW;
+  const oldPhase = oldW ? (bgOffsetX % oldW) / oldW : 0;
+
+  currentBgSrc = src;
+  bgTileW = computeTileWidthFor(src);
+  bgOffsetX = oldPhase * bgTileW;
+
+  layer.style.backgroundImage = `url(${src})`;
+  layer.style.backgroundRepeat = 'repeat-x';
+  layer.style.backgroundSize = `auto 100%`;
+  layer.style.backgroundPosition = `${-bgOffsetX}px 0`;
+  layer.style.animation = 'none';
+}
+
+function tick(ts) {
+  if (!lastTs) lastTs = ts;
+  const dt = (ts - lastTs) / 1000;
+  lastTs = ts;
+
+  bgOffsetX += bgSpeed * dt;
+  if (bgTileW > 0) bgOffsetX = bgOffsetX % bgTileW;
+
+  layer1.style.backgroundPosition = `${-bgOffsetX}px 0`;
+  requestAnimationFrame(tick);
+}
+
+/* ======= HELPERS ======= */
+function clearTrees() { layer2.innerHTML = ''; }
+function makeImage(src) { const img = document.createElement('img'); img.src = src; return img; }
+
+/* ======= HOUSE WIGGLE ======= */
+function startHouseWiggle(houseImgEl) {
+  const params = {
+    ax: 2 + Math.random() * 4,
+    ay: 1 + Math.random() * 3,
+    ar: 0.5 + Math.random() * 1.2,
+    f1: 0.18 + Math.random() * 0.22,
+    f2: 0.07 + Math.random() * 0.12,
+    f3: 0.11 + Math.random() * 0.17,
+    p1: Math.random() * Math.PI * 2,
+    p2: Math.random() * Math.PI * 2,
+    p3: Math.random() * Math.PI * 2,
+  };
+
+  let raf = 0, t0 = 0;
+  function loop(ts) {
+    if (!t0) t0 = ts;
+    const t = (ts - t0) / 1000;
+    const x = params.ax * (Math.sin(2*Math.PI*params.f1*t + params.p1) + 0.6*Math.sin(2*Math.PI*params.f2*t + params.p2)) * 0.6;
+    const y = params.ay * (Math.sin(2*Math.PI*params.f2*t + params.p2) + 0.5*Math.sin(2*Math.PI*params.f3*t + params.p3)) * 0.6;
+    const r = params.ar * (Math.sin(2*Math.PI*params.f3*t + params.p3) + 0.5*Math.sin(2*Math.PI*params.f1*t + params.p1)) * 0.6;
+    houseImgEl.style.transform = `translate(${x.toFixed(2)}px, ${y.toFixed(2)}px) rotate(${r.toFixed(2)}deg)`;
+    raf = requestAnimationFrame(loop);
+  }
+  raf = requestAnimationFrame(loop);
+  return () => cancelAnimationFrame(raf);
+}
+
+/* ======= PAGE LABEL ======= */
+let labelTimer = null;
+function setLabelText(num) {
+  pageLabel.textContent = PAGE_TEXT[num] || '';
+}
+function randomizeLabelPosition() {
+  const minX = 28, maxX = 68;
+  const minY = 28, maxY = 68;
+  const x = (Math.random() * (maxX - minX) + minX).toFixed(2) + '%';
+  const y = (Math.random() * (maxY - minY) + minY).toFixed(2) + '%';
+  pageLabel.style.left = x;
+  pageLabel.style.top = y;
+  pageLabel.classList.remove('spawn'); void pageLabel.offsetWidth;
+  pageLabel.classList.add('spawn');
+}
+function startLabelLoop() {
+  if (labelTimer) clearInterval(labelTimer);
+  randomizeLabelPosition();
+  labelTimer = setInterval(randomizeLabelPosition, 4000);
+}
+
+/* ======= MAIN ANIMATION ======= */
+function playAnimation(num) {
+  clearTrees();
+  setBackgroundSeamless(layer1, IMAGES.backgrounds[num - 1]);
+
+  // Update label for this page and (re)start its reposition loop
+  setLabelText(num);
+  startLabelLoop();
+
+  let trees = [];
+  switch (num) {
+    case 1: trees = ['images/treesone.png', 'images/treesfour.png', 'images/treestwo.png']; break;
+    case 2: trees = ['images/treestwo.png', 'images/treesone.png', 'images/treesthree.png']; break;
+    case 3: trees = ['images/treesthree.png', 'images/treestwo.png', 'images/treesfour.png']; break;
+    case 4: trees = ['images/treesfour.png', 'images/treesthree.png', 'images/treesone.png']; break;
+  }
+
+  const [firstTree, secondTree, newTree] = trees.map(makeImage);
+  firstTree.style.left = '75%';
+  secondTree.style.left = '-40%';
+  newTree.style.left = '125%';
+  layer2.append(firstTree, secondTree, newTree);
+
+  setTimeout(() => {
+    firstTree.style.left = '-40%';
+    secondTree.style.left = '-125%';
+    newTree.style.left = '75%';
+  }, 50);
+
+  // Houses
+  const startNewHouse = () => {
+    const wrap = document.createElement('div');
+    wrap.className = 'houseWrap';
+    wrap.setAttribute('role', 'link');
+    wrap.setAttribute('tabindex', '0');
+
+    // Start OFF-screen, no transition
+    wrap.style.transition = 'none';
+    wrap.style.left = '175%';
+    wrap.style.top = '50%';
+
+    const img = document.createElement('img');
+    img.className = 'houseImg';
+    img.src = IMAGES.houses[num - 1];
+
+    wrap.appendChild(img);
+    layer3.appendChild(wrap);
+
+    // Open the page-specific link
+    wrap.onclick = () => {
+      const href = LINKS[num];
+      if (href) window.open(href, '_blank', 'noopener');
+    };
+    wrap.onkeydown = (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const href = LINKS[num];
+        if (href) window.open(href, '_blank', 'noopener');
+      }
+    };
+
+    wrap._stopWiggle = startHouseWiggle(img);
+
+    // Commit start state
+    wrap.getBoundingClientRect();
+
+    // Enable transition and slide in
+    requestAnimationFrame(() => {
+      wrap.style.transition = 'left 1s ease-in-out';
+      wrap.style.left = '50%';
+    });
+
+    currentHouseWrap = wrap;
+  };
+
+  if (currentHouseWrap) {
+    const old = currentHouseWrap;
+    const handleOut = () => {
+      old.removeEventListener('transitionend', handleOut);
+      if (typeof old._stopWiggle === 'function') old._stopWiggle();
+      if (old.parentElement === layer3) layer3.removeChild(old);
+    };
+    old.addEventListener('transitionend', handleOut, { once: true });
+    old.style.left = '-125%';
+    startNewHouse();
+  } else {
+    startNewHouse();
+  }
+}
+
+/* ======= PAGE NAV HELPERS ======= */
+function nextPage() {
+  currentAnimation = currentAnimation % totalAnimations + 1;
+  playAnimation(currentAnimation);
+}
+
+/* ======= AUTO-ADVANCE (stops on arrow click) ======= */
+let autoTimer = null;
+function startAutoAdvance() {
+  stopAutoAdvance(); // safety
+  autoTimer = setInterval(nextPage, 3000);
+}
+function stopAutoAdvance() {
+  if (autoTimer) {
+    clearInterval(autoTimer);
+    autoTimer = null;
+  }
+}
+
+/* ======= UI ======= */
+document.getElementById('navArrowWrap').addEventListener('click', () => {
+  stopAutoAdvance();
+  nextPage();
+});
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight') {
+    nextPage();
+  }
+});
+
+/* ======= RANDOM START PAGE ======= */
+function pickRandomAnimation(prev = null) {
+  if (totalAnimations <= 1) return 1;
+  let n;
+  do { n = Math.floor(Math.random() * totalAnimations) + 1; }
+  while (n === prev);
+  return n;
+}
+
+/* ======= BOOT ======= */
+(async function init() {
+  await preloadImages();
+
+  currentAnimation = pickRandomAnimation();
+
+  setBackgroundSeamless(layer1, IMAGES.backgrounds[currentAnimation - 1]);
+  requestAnimationFrame(tick);
+
+  playAnimation(currentAnimation);
+
+  // Start auto-advance until the arrow is clicked
+  startAutoAdvance();
+
+  // Fade from black now that first scene is ready
+  requestAnimationFrame(() => {
+    blackFade.classList.add('hide');
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Spencer Coddington</title>
+<style>
+  :root {
+    --base-w: 1920;   /* design width */
+    --base-h: 1080;   /* design height */
+    --scale: 1;       /* computed by JS */
+
+    --frame-w: 75%;
+    --frame-h: 75%;
+    --gap: 16px;
+  }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: #000;     /* fallback under bars */
+    overflow: hidden;
+  }
+
+  /* ---- Image bars (behind the stage) ---- */
+  .bar {
+    position: fixed;
+    z-index: 0;                /* behind stage */
+    overflow: hidden;
+    pointer-events: none;      /* don't intercept clicks */
+    background: #000;          /* fallback under image */
+  }
+  .bar-img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform-origin: center center;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+  }
+
+  /* ---- Scaled stage ---- */
+  #stage {
+    position: fixed;
+    z-index: 1; /* above bars */
+    left: 50%;
+    top: 50%;
+    width: calc(var(--base-w) * 1px);
+    height: calc(var(--base-h) * 1px);
+    transform: translate(-50%, -50%) scale(var(--scale));
+    transform-origin: center center;
+    backface-visibility: hidden;
+    will-change: transform;
+    background: #000; /* optional */
+  }
+
+  .frame-wrap {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--frame-w);
+    height: var(--frame-h);
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  }
+  .frame-wrap iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+
+  .image-wrap {
+    position: absolute;
+    left: 0;
+    top: calc(var(--frame-h) + var(--gap));
+    width: var(--frame-w);
+    height: calc(100% - var(--frame-h) - var(--gap));
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  }
+  .image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* ---- Logo in top-right of the STAGE (content area) ---- */
+  .logo {
+    position: absolute;
+    right: 70px;   /* stage pixels */
+    top: 16px;     /* stage pixels */
+    z-index: 5;    /* above iframe/image within stage */
+    width: 350px;  /* tweak to your design; scales with stage */
+    max-width: 32%;/* keep sensible on smaller stages */
+    pointer-events: auto;
+  }
+  .logo img {
+    display: block;
+    width: 100%;
+    height: auto;
+    user-select: none;
+    -webkit-user-drag: none;
+    filter: drop-shadow(0 6px 16px rgba(0,0,0,0.45));
+  }
+  
+    .logo2 {
+    position: absolute;
+    right: 80px;   /* stage pixels */
+    top: 760px;     /* stage pixels */
+    z-index: 5;    /* above iframe/image within stage */
+    width: 350px;  /* tweak to your design; scales with stage */
+    max-width: 32%;/* keep sensible on smaller stages */
+    pointer-events: auto;
+  }
+  .logo2 img {
+    display: block;
+    width: 100%;
+    height: auto;
+    user-select: none;
+    -webkit-user-drag: none;
+    filter: drop-shadow(0 6px 16px rgba(0,0,0,0.45));
+  }
+
+  /* ---- Text centered under logo (wraps after a bit) ---- */
+  .logo-text {
+    margin-top: 10px;           /* stage pixels */
+    color: #fff;
+    text-align: center;
+    font: 600 15px/1.2 Arial, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+
+    /* allow wrapping & keep it nicely sized under the logo */
+    white-space: normal;
+    max-width: 85%;             /* relative to the logo box width */
+    margin-left: auto;
+    margin-right: auto;
+
+    /* better wrapping behavior */
+    overflow-wrap: anywhere;    /* break long words if needed */
+    text-wrap: balance;         /* nicer line breaks when supported */
+
+    /* soft outline for readability */
+    text-shadow:
+      -2px -2px 0 #000,
+       0   -2px 0 #000,
+       2px -2px 0 #000,
+      -2px  0   0 #000,
+       2px  0   0 #000,
+      -2px  2px 0 #000,
+       0    2px 0 #000,
+       2px  2px 0 #000;
+  }
+</style>
+</head>
+<body>
+
+<!-- Image bars -->
+<div id="barL" class="bar"><img class="bar-img" alt="" /></div>
+<div id="barR" class="bar"><img class="bar-img" alt="" /></div>
+<div id="barT" class="bar"><img class="bar-img" alt="" /></div>
+<div id="barB" class="bar"><img class="bar-img" alt="" /></div>
+
+<!-- Scaled stage -->
+<div id="stage" aria-label="Scaled Stage">
+  <!-- Logo anchored to the stage (not the black bars) -->
+  <div class="logo" aria-label="Logo">
+    <img src="images/logo.png" alt="Logo">
+  </div>
+    <div class="logo2" aria-label="Logo">
+    <a href="https://www.instagram.com/spencercoddington/" 
+   target="_blank" 
+   rel="noopener noreferrer"
+   aria-label="Open Instagram (new tab)">
+  <img src="images/qr.png" alt="Instagram QR code">
+</a>
+
+  </div>
+
+  <div class="frame-wrap">
+    <iframe
+      src="the"
+      title="Embedded Content"
+      allowfullscreen
+      loading="lazy">
+    </iframe>
+  </div>
+
+  <div class="image-wrap">
+    <img src="images/nav.png" alt="Below frame image" />
+  </div>
+</div>
+
+<script>
+  /* One image used for all bars */
+  const BAR_IMG = 'images/bar.png'; // <-- change to your bar image
+
+  const barL = document.getElementById('barL');
+  const barR = document.getElementById('barR');
+  const barT = document.getElementById('barT');
+  const barB = document.getElementById('barB');
+
+  const imgL = barL.querySelector('.bar-img');
+  const imgR = barR.querySelector('.bar-img');
+  const imgT = barT.querySelector('.bar-img');
+  const imgB = barB.querySelector('.bar-img');
+
+  [imgL, imgR, imgT, imgB].forEach(el => (el.src = BAR_IMG));
+
+  let natW = 1, natH = 1; // natural size of BAR_IMG
+
+  function preloadBarImage() {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => { natW = img.naturalWidth || 1; natH = img.naturalHeight || 1; resolve(); };
+      img.onerror = reject;
+      img.src = BAR_IMG;
+    });
+  }
+
+  (function fitStageAndBars() {
+    const css = getComputedStyle(document.documentElement);
+    const BASE_W = parseFloat(css.getPropertyValue('--base-w')) || 1920;
+    const BASE_H = parseFloat(css.getPropertyValue('--base-h')) || 1080;
+
+    function setImgTransform(imgEl, w, h, rotate90) {
+      // Scale so the (possibly rotated) image fully covers the bar
+      // If rotated: displayed width' = s * natH, height' = s * natW
+      // Else:       width' = s * natW, height' = s * natH
+      let s;
+      if (rotate90) {
+        s = Math.max(w / natH, h / natW);
+        imgEl.style.width = natW + 'px';
+        imgEl.style.height = natH + 'px';
+        imgEl.style.transform = `translate(-50%, -50%) rotate(90deg) scale(${s})`;
+      } else {
+        s = Math.max(w / natW, h / natH);
+        imgEl.style.width = natW + 'px';
+        imgEl.style.height = natH + 'px';
+        imgEl.style.transform = `translate(-50%, -50%) scale(${s})`;
+      }
+    }
+
+    function update() {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      // Scale for the stage
+      const scale = Math.min(vw / BASE_W, vh / BASE_H);
+      document.documentElement.style.setProperty('--scale', scale);
+
+      const stageW = BASE_W * scale;
+      const stageH = BASE_H * scale;
+
+      // Compute leftover space -> bars
+      const leftoverX = Math.max(0, (vw - stageW) / 2); // pillarbox (left/right)
+      const leftoverY = Math.max(0, (vh - stageH) / 2); // letterbox (top/bottom)
+
+      // Left/Right bars (vertical) -> NO rotation
+      if (leftoverX > 0) {
+        barL.style.display = 'block';
+        barR.style.display = 'block';
+
+        barL.style.left = '0px';
+        barL.style.top = '0px';
+        barL.style.width = `${leftoverX}px`;
+        barL.style.height = `${vh}px`;
+        setImgTransform(imgL, leftoverX, vh, false);
+
+        barR.style.left = `${vw - leftoverX}px`;
+        barR.style.top = '0px';
+        barR.style.width = `${leftoverX}px`;
+        barR.style.height = `${vh}px`;
+        setImgTransform(imgR, leftoverX, vh, false);
+      } else {
+        barL.style.display = 'none';
+        barR.style.display = 'none';
+      }
+
+      // Top/Bottom bars (horizontal) -> ROTATE 90°
+      if (leftoverY > 0) {
+        barT.style.display = 'block';
+        barB.style.display = 'block';
+
+        barT.style.left = '0px';
+        barT.style.top = '0px';
+        barT.style.width = `${vw}px`;
+        barT.style.height = `${leftoverY}px`;
+        setImgTransform(imgT, vw, leftoverY, true);
+
+        barB.style.left = '0px';
+        barB.style.top = `${vh - leftoverY}px`;
+        barB.style.width = `${vw}px`;
+        barB.style.height = `${leftoverY}px`;
+        setImgTransform(imgB, vw, leftoverY, true);
+      } else {
+        barT.style.display = 'none';
+        barB.style.display = 'none';
+      }
+    }
+
+    window.addEventListener('resize', update, { passive: true });
+
+    // Ensure we know natural size first for perfect scaling
+    preloadBarImage().then(update).catch(() => update());
+  })();
+</script>
+
+</body>
+</html>

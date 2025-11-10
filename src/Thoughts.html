@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Spencer Thoughts</title>
+<style>
+  html, body { height:100%; margin:0; background:#000; }
+  #root { height:100%; display:grid; }
+  /* The rendered site lives entirely inside this iframe */
+  #liveFrame {
+    width:100%;
+    height:100%;
+    border:0;
+    display:block;
+    background:#fff;
+  }
+</style>
+</head>
+<body>
+
+<div id="root">
+  <iframe id="liveFrame" title="Sheet-backed site"></iframe>
+</div>
+
+<script>
+/* ======= CONFIG ======= */
+const SHEET_ID = "1lPgJvPhejKR5nArjvPjTONkkEL9sg_ep-gqMP6ME1lM"; // your sheet id
+const GID      = "0";   // tab gid
+const COL_IDX  = 3;     // 0 = column A holds the HTML lines
+const AUTO_REFRESH_MS = 0; // e.g. 15000 for 15s, 0 = off
+
+/* Optional: if your HTML uses relative paths (css/app.js/images),
+   set the base URL of where those files are hosted. If you already
+   include a <base> in the sheet HTML, leave this blank. */
+const OPTIONAL_BASE_HREF = ""; // e.g. "https://dkg.zone/spencer/"
+
+/* ======= GViz JSONP ======= */
+function gvizJsonp(sheetId, gid) {
+  return new Promise((resolve, reject) => {
+    const cb = "gviz_cb_" + Math.random().toString(36).slice(2);
+    const url =
+      `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq` +
+      `?gid=${encodeURIComponent(gid)}` +
+      `&tq=${encodeURIComponent("select *")}` +
+      `&tqx=${encodeURIComponent(`out:json;responseHandler:${cb}`)}` +
+      `&cachebust=${Date.now()}`;
+
+    const s = document.createElement("script");
+    const timer = setTimeout(() => { cleanup(); reject(new Error("GViz JSONP timeout")); }, 12000);
+
+    function cleanup() { delete window[cb]; s.remove(); clearTimeout(timer); }
+    window[cb] = (json) => { cleanup(); resolve(json); };
+    s.onerror = () => { cleanup(); reject(new Error("GViz script load error")); };
+    s.src = url;
+    document.body.appendChild(s);
+  });
+}
+
+function rowsFromGviz(json) {
+  return (json.table?.rows || []).map(r =>
+    (r.c || []).map(c => (c && c.v != null ? String(c.v) : ""))
+  );
+}
+
+/* ======= Build full document ======= */
+function buildFullDoc(lines) {
+  let html = lines.join("\n").trim();
+
+  // If the sheet only contains a fragment, wrap it into a full HTML doc.
+  const hasHtmlTag = /<\s*html[\s>]/i.test(html);
+  if (!hasHtmlTag) {
+    const baseTag = OPTIONAL_BASE_HREF
+      ? `<base href="${OPTIONAL_BASE_HREF}">`
+      : "";
+    html =
+`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+${baseTag}
+<title>Sheet Site</title>
+</head>
+<body>
+${html}
+</body>
+</html>`;
+  } else if (OPTIONAL_BASE_HREF && !/<\s*base[\s>]/i.test(html)) {
+    // If you provided a base href and the doc has <html> but no <base>, inject one after <head>.
+    html = html.replace(/<\s*head\s*>/i, match => `${match}\n<base href="${OPTIONAL_BASE_HREF}">`);
+  }
+
+  return html;
+}
+
+/* ======= Render into iframe via srcdoc ======= */
+const frame = document.getElementById("liveFrame");
+
+function renderToIframe(fullHtml) {
+  // Give the content its own environment (more like a real site)
+  // allow-scripts enables inline scripts from the sheet to run
+  // allow-same-origin lets relative URLs, storage, etc. behave normally
+  frame.setAttribute("sandbox", "allow-scripts allow-forms allow-modals allow-popups allow-downloads allow-same-origin");
+  frame.srcdoc = fullHtml;
+}
+
+async function refresh() {
+  try {
+    const data = await gvizJsonp(SHEET_ID, GID);
+    const rows = rowsFromGviz(data);
+    const lines = rows.map(r => r[COL_IDX] ?? "").filter(Boolean);
+    const fullDoc = buildFullDoc(lines);
+    renderToIframe(fullDoc);
+  } catch (e) {
+    console.error(e);
+    renderToIframe(`<!doctype html><meta charset="utf-8"><style>body{background:#111;color:#f66;font:14px/1.4 system-ui;padding:24px;}</style><h1>Load error</h1><pre>${(e && e.message) || e}</pre>`);
+  }
+}
+
+/* ======= Boot ======= */
+refresh();
+if (AUTO_REFRESH_MS > 0) setInterval(refresh, AUTO_REFRESH_MS);
+</script>
+
+</body>
+</html>

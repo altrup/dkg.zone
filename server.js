@@ -12,7 +12,31 @@ app.get('/', (req, res) => {
 });
 
 app.get('/spencer', (req, res) => {
-  res.sendFile(path.join(__dirname, "src/spencer.html"));
+  res.sendFile(path.join(__dirname, "src/big.html"));
+});
+
+app.get('/the', (req, res) => {
+  res.sendFile(path.join(__dirname, "src/the.html"));
+});
+
+app.get('/splans', (req, res) => {
+  res.sendFile(path.join(__dirname, "src/plans.html"));
+});
+
+app.get('/splans', (req, res) => {
+  res.sendFile(path.join(__dirname, "src/plans.html"));
+});
+
+app.get('/sthoughts', (req, res) => {
+  res.sendFile(path.join(__dirname, "src/thoughts.html"));
+});
+
+app.get('/sworks', (req, res) => {
+  res.sendFile(path.join(__dirname, "src/works.html"));
+});
+
+app.get('/halloween', (req, res) => {
+  res.sendFile(path.join(__dirname, "src/halloween.html"));
 });
 
 app.get('/mobile', (req, res) => {
